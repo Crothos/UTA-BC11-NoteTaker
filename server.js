@@ -21,6 +21,7 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
+// IS THIS MY PROBLEM?!?!?!?!?!
 app.get('/api/notes', (req, res) => res.json(noteData));
 
 app.post('/api/notes', (req, res) => {
@@ -69,6 +70,26 @@ app.post('/api/notes', (req, res) => {
       res.status(500).json('Error in posting note');
     }
   });
+
+  app.delete('/api/notes/:id', (req, res) => {
+      fs.readFile('./db/db.json', 'utf8', (err, noteData) => {
+        if (err) {
+          console.error(err);
+        } else {
+          var parsedNotes = JSON.parse(noteData);
+          parsedNotes = parsedNotes.filter( item => item.id !== req.params.id);
+
+          fs.writeFile(
+            './db/db.json',
+            JSON.stringify(parsedNotes, null, 4),
+            (writeErr) =>
+              writeErr
+                ? console.error(writeErr)
+                : console.info('Successfully updated notes!')
+          );
+        }
+      });
+    });
 
   app.get('*', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/index.html'))
