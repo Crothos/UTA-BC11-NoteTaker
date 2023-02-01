@@ -23,41 +23,38 @@ app.get('/notes', (req, res) =>
 
 app.get('/api/notes', (req, res) => res.json(noteData));
 
-app.post('/api/reviews', (req, res) => {
+app.post('/api/notes', (req, res) => {
 
-  console.info(`${req.method} request received to add a review`);
+  console.info(`${req.method} request received to add a note`);
+  const { title, text } = req.body;
 
-  const { product, review, username } = req.body;
+  if (title && text) {
 
-  if (product && review && username) {
-
-    const newReview = {
-      product,
-      review,
-      username,
-      upvotes: Math.floor(Math.random() * 100),
+    const newNote = {
+      title,
+      text,
       review_id: uuid(),
     };
 
-    const reviewString = JSON.stringify(newReview);
+    const noteString = JSON.stringify(newNote);
 
-    fs.writeFile(`./db/${newReview.product}.json`, reviewString, (err) =>
+    fs.writeFile(`./db/db.json`, noteString, (err) =>
       err
         ? console.error(err)
         : console.log(
-            `Review for ${newReview.product} has been written to JSON file`
+            `New note has been written to JSON file`
           )
     );
 
     const response = {
       status: 'success',
-      body: newReview,
+      body: newNote,
     };
 
     console.log(response);
     res.status(201).json(response);
   } else {
-    res.status(500).json('Error in posting review');
+    res.status(500).json('Error in posting note');
   }
 });
 
