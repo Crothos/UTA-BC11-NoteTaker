@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const noteData = require('./db/db.json')
 const uuid = require('./helpers/uuid');
 
 const port = process.env.PORT || 3001
@@ -21,8 +20,10 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
-// IS THIS MY PROBLEM?!?!?!?!?!
-app.get('/api/notes', (req, res) => res.json(noteData));
+app.get('/api/notes', (req, res) => {
+  var options = {encoding: 'utf8', flag:'r'};
+  res.json(JSON.parse(fs.readFileSync('./db/db.json', options)));
+});
 
 app.post('/api/notes', (req, res) => {
 
@@ -45,7 +46,7 @@ app.post('/api/notes', (req, res) => {
         } else {
 
           const parsedNotes = JSON.parse(noteData);
-            console.log(parsedNotes);
+          console.log(parsedNotes);
           parsedNotes.push(newNote);
 
           fs.writeFile(
@@ -89,7 +90,7 @@ app.post('/api/notes', (req, res) => {
           );
         }
       });
-    });
+  });
 
   app.get('*', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/index.html'))
